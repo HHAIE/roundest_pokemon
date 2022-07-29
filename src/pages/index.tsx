@@ -1,9 +1,12 @@
 import type { NextPage } from "next";
+import { useEffect, useState } from 'react'
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
+import { getOptionsIds } from "../utils/getRandomPokemon";
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
+  // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
+  const [[firstId, secondId], setRandomPokemon] = useState(getOptionsIds())
 
   return (
     <>
@@ -17,9 +20,9 @@ const Home: NextPage = () => {
         <div className="text-2xl text-center">Which Pokemon is Roundest?</div>
         <div className="p-2"/>
         <div className="border rounded p-8 flex justify-between max-w-2xl items-center">
-          <div className="w-16 h-16 bg-red-600"/>
+          <div className="w-16 h-16 bg-red-600">{firstId}</div>
           <div className="text-2xl p-8">VS</div>
-          <div className="w-16 h-16 bg-red-600"/>
+          <div className="w-16 h-16 bg-red-600">{secondId}</div>
         </div>
       </div>
 
