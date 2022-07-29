@@ -1,13 +1,16 @@
 import type { NextPage } from "next";
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { getOptionsIds } from "../utils/getRandomPokemon";
 
 const Home: NextPage = () => {
-  // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
-  const [[firstId, secondId], setRandomPokemon] = useState(getOptionsIds())
+  const [firstId, secondId] = useMemo(()=>getOptionsIds(), [])
+  
+  const firstPokemon = trpc.useQuery(["pokemon.get-pokemon-by-id", { id: firstId }]);
+  const secondPokemon = trpc.useQuery(["pokemon.get-pokemon-by-id", { id: secondId }]);
 
+  if (firstPokemon.isLoading || secondPokemon.isLoading) return null
   return (
     <>
       <Head>
@@ -20,10 +23,17 @@ const Home: NextPage = () => {
         <div className="text-2xl text-center">Which Pokemon is Roundest?</div>
         <div className="p-2"/>
         <div className="border rounded p-8 flex justify-between max-w-2xl items-center">
-          <div className="w-16 h-16 bg-red-600">{firstId}</div>
+          <div className="w-32 h-32 flex flex-col">
+            <img src={firstPokemon.data?.sprites.front_default} className="w-full"/>
+            <div className="text-xl text-center capitalize mt-[-2rem]">{firstPokemon.data?.name}</div>
+          </div>
           <div className="text-2xl p-8">VS</div>
-          <div className="w-16 h-16 bg-red-600">{secondId}</div>
+          <div className="w-32 h-32 flex flex-col">
+            <img src={secondPokemon.data?.sprites.front_default} className="w-full"/>
+            <div className="text-xl text-center capitalize mt-[-2rem]">{secondPokemon.data?.name}</div>
+          </div>
         </div>
+        <div className="p-2"/>
       </div>
 
       {/* <div className="w-screen min-h-screen flex flex-col justify-center items-center p-4 overflow-y-scroll">
